@@ -1,5 +1,9 @@
 package com.loversQuest.gameWorldPieces;
 
+/**
+ * location is some thing that has name , description, container and an Item List & NPC
+ */
+
 
 import java.util.*;
 
@@ -19,6 +23,10 @@ public class Location {
     private HashMap<CardinalDirection, Location> directionMap = new HashMap<>();
 
     // CTOR
+    public Location(){
+
+    }
+
     public Location(String name, String description) {
         this.name = name;
         this.description = description;
@@ -140,16 +148,16 @@ public class Location {
         directionMap.replace(CardinalDirection.WEST, area);
     }
 
-    @Override
-    public String toString() {
-        return "Location{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", East=" + getEast().getName() +
-                ", North=" + getNorth().getName() +
-                ", South=" + getSouth().getName() +
-                ", West=" + getWest().getName() +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Location{" +
+//                "name='" + name + '\'' +
+//                ", description='" + description + '\'' +
+//                ", East=" + getEast().getName() +
+//                ", North=" + getNorth().getName() +
+//                ", South=" + getSouth().getName() +
+//                ", West=" + getWest().getName() +
+//                '}';
+//    }
 }
 
