@@ -1,26 +1,12 @@
 package com.loversQuest.gameWorldPieces;
 
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
-
-import com.loversQuest.IO.GraphicClass;
-
-import java.io.IOException;
 
 public class Player {
 
     private String name;
     private Location currentLocation;
-
-    private boolean hasChallengeCoin = false;
-    private boolean hasKiss = false;
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String BLUE = "\u001B[34m";
-
-
-    public RuckSack ruckSack = new RuckSack();
-
+    public PlayerContainer ruckSack = new PlayerContainer();
 
     // CTOR
     public Player(String name, Location currentLocation) {
@@ -29,145 +15,166 @@ public class Player {
     }
 
     // BUSINESS METHODS
-
-    //go function can result in navigating to "NOTHING" area. need to error check if
-    // indicated direction is not a room and prevent movement.
     public boolean go(String directionInput) {
-
-        String direction = directionInput.toLowerCase();
+        String direction = directionInput.toUpperCase();
         String response = null;
-
         boolean result = false;
-
-        // conditions for officer functionality. (Preventing us from going to the west)
-        if (getCurrentLocation().getOccupant() instanceof Officer) {
-            if (direction.equals("west")) {
-                if (getItem(getCurrentLocation().getOccupant().getPrize().getName()) == null) {
-                    ((Officer) getCurrentLocation().getOccupant()).reRoute(this);
-                    return false;
-                }
-            }
-        }
-
         //get indicated destination from direction string
-        Location destination = this.currentLocation.getDirectionFromString(directionInput);
-        // if it is a valid direction to go, update current position
-
+        Location destination = this.currentLocation.getDirectionFromString(direction);
         if (destination != null && validateLocation(destination)) {
             this.setCurrentLocation(destination);
             result = true;
         }
         return result;
-
     }
 
     // checks if a given location is a place a player can move
     public boolean validateLocation(Location destination) {
-        return !destination.getName().equals("NOTHING");
+        return !destination.getName().toUpperCase().equals("NOTHING");
     }
 
     public String look() {
             return ("You look around and " + this.getCurrentLocation().getDescription());
     }
 
-    public String interact() {
-        if (currentLocation.getOccupant() == null) {
-            return "There is no one here";
+    public String interact(String npcRequested) {
+        if (currentLocation.getOccupants().isEmpty() || currentLocation.getOccupantByName(npcRequested) == null) {
+            String returingMsg = "seems like " + npcRequested + " is not here";
+            return returingMsg;
         } else {
-            return currentLocation.getOccupant().getName() + " is here.\nThey say: " + currentLocation.getOccupant().interact(this);
+            return currentLocation.getOccupantByName(npcRequested).interact(this);
         }
     }
 
-    public void addItem(Item item) {
-        // call item.addItem() to add item/quantity to ruckSack
-        ruckSack.addItem(item);
+
+    /**
+     * //TODO: add a logic that will remove expendable items
+     * @param itemRequested
+     * @return
+     */
+    public String useItem(String itemRequested){
+        StringBuilder returningMsg = new StringBuilder();
+        Item itemToUse = this.getItem(itemRequested);
+        if(itemToUse != null){
+            returningMsg.append(itemToUse.getUseResponse());
+        }
+        else {
+            returningMsg.append("you cannot use that");
+        }
+        return returningMsg.toString();
     }
 
-    public Item getItem(String itemName) {
-        return this.ruckSack.getItem(itemName.toLowerCase());
-    }
-
-    public boolean pickUpItem(String itemName) {
-        //loop through items in current location
-        boolean gotItem = false;
-        for (int i = 0; i < currentLocation.getItemsList().size(); i++) {
-            Item locationItem = currentLocation.getItemsList().get(i);
-            // first portion originally: itemName.toLowerCase().equals(locationItem.getName().toLowerCase()
-            if (locationItem.getName().toLowerCase().contains(itemName.toLowerCase()) && !(locationItem instanceof Container)) {
-                this.addItem(locationItem);
-                currentLocation.removeItem(locationItem);
-                gotItem = true;
+    /**
+     * method to pick up item in location.container and add to ruckSack, location.container.list remove item
+     * @param itemRequested
+     * @return
+     */
+    public String pickUpItem(String itemRequested) {
+        StringBuilder returningMsg = new StringBuilder();
+        Item pickedItem = null;
+        if (currentLocation.getContainer() == null){
+            returningMsg.append("there is nothing to pick up other than your dignity");
+        } else {
+            if(itemRequested.toLowerCase().equals("diamond ring")){
+                if(this.isHasCertainItem("Soldier of Month Certificate"))
+                {
+                    this.ruckSack.addItem(currentLocation.getContainer().getItem("diamond ring"));
+                    return "you finally get that diamond ring! check it out and go find your Darling!";
+                } else {
+                    return "the diamond ring is like twice as much as your pay check. However, if you could show me your soldier of the month certificate, you can get 99% discount";
+                }
+            }
+            if (currentLocation.getContainer().displayContents().isEmpty()){
+                returningMsg.append("Oops, there is nothing in " + currentLocation.getContainer().getName());
+            } else {
+                for (Item item: currentLocation.getContainer().displayContents()){
+                    if (itemRequested.equals(item.getName())){
+                         pickedItem= item;
+                        returningMsg.append("you found a " + pickedItem.getName() + "! finders, keepers!");
+                    }
+                }
+                if (pickedItem != null) {
+                    this.currentLocation.getContainer().removeItem(pickedItem);
+                    this.ruckSack.addItem(pickedItem);
+                } else {
+                    returningMsg.append("you cannot get a " + itemRequested);
+                }
             }
         }
-        return gotItem;
-        // if string itemName matches an item in current location
-        // add item to inventory and remove item from location
+        return returningMsg.toString();
     }
 
-    public ArrayList<Item> inspect() {
-        ArrayList<Item> result = null;
+    /**
+     * check container in current location
+     * @return
+     */
+    public String inspect() {
+        String result = null;
         if(currentLocation.getContainer() != null){
-            result = currentLocation.getContainer().displayContents();
+            StringBuilder response = new StringBuilder("you checked out ");
+            String conName = this.currentLocation.getContainer().getName();
+            List<Item> conList = this.currentLocation.getContainer().displayContents();
+            if(conList.size() >0 ) {
+                response.append(conName);
+                response.append(" , and found ");
+                response.append(conList.toString());
+                result = response.toString();
+            } else {
+                result = "there is nothing inside " + this.currentLocation.getContainer().getName();
+            }
         }
         return result;
+    }
+
+    /**
+     * check if player have an item by name
+     * @param itemName
+     * @return
+     */
+
+    public boolean isHasCertainItem(String itemName) {
+        List<Item> allItems = this.getAllItems();
+        for (Item item : allItems) {
+            if (item.getName().toLowerCase().equals(itemName.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * return a string to show what to do here
+     */
+
+    public String helpGuide(){
+        String npcNames = null;
+        for (int i= 0; i < this.getCurrentLocation().getOccupants().size(); i++){
+            StringBuilder sb = new StringBuilder();
+            sb.append(this.getCurrentLocation().getOccupants().get(i).getName());
+            if (i != this.getCurrentLocation().getOccupants().size()-1 ){
+                sb.append(" or ");
+            }
+            npcNames = sb.toString();
+        }
+        return "try to inspect " + this.getCurrentLocation().getContainer().getName() + " or talk to " + npcNames;
     }
 
     public String displayItems() {
         return ruckSack.displayRuckSackContents();
     }
-
     public List<Item> getAllItems() {
         return ruckSack.items;
     }
 
     // SETTERS/GETTERS
-    public String getName() {
-        return name;
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public Location getCurrentLocation() { return currentLocation; }
+    public void setCurrentLocation(Location currentLocation) { this.currentLocation = currentLocation; }
+    public void addItem(Item item) { ruckSack.addItem(item); }
+    public Item getItem(String itemName) {
+        return this.ruckSack.getItem(itemName.toLowerCase());
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Location getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public void setCurrentLocation(Location currentLocation) {
-        this.currentLocation = currentLocation;
-    }
-
-//    public void printCurrentAscii() throws IOException {
-//        //            this.currentLocation.getName().toLowerCase().equals("gazebo");
-//
-////        String printLocation = this.currentLocation.getName().toLowerCase();
-//
-//        switch (this.currentLocation.getName().toLowerCase()) {
-//            case BLUE + "laundryroom" + ANSI_RESET -> graphicImage.printLocation("laundryRoom.txt");
-//            case BLUE + "barracks" + ANSI_RESET -> graphicImage.printLocation("home.txt");
-//            case BLUE + "gym" + ANSI_RESET -> graphicImage.printLocation("gym.txt");
-//            case BLUE + "courtyard" + ANSI_RESET -> graphicImage.printLocation("courtYard.txt");
-//            case BLUE + "range" + ANSI_RESET -> graphicImage.printLocation("range.txt");
-//            case BLUE + "portajohn" + ANSI_RESET -> graphicImage.printLocation("portaJohn.txt");
-//            case BLUE + "chowhall" + ANSI_RESET -> graphicImage.printLocation("chowHall.txt");
-//            case BLUE + "px" + ANSI_RESET -> graphicImage.printLocation("px.txt");
-//            default -> graphicImage.printLocation("gazebo.txt");
-//        }
-
-    public boolean isHasChallengeCoin() {
-        return hasChallengeCoin;
-    }
-
-    public void setHasChallengeCoin(boolean hasChallengeCoin) {
-        this.hasChallengeCoin = hasChallengeCoin;
-    }
-
-    public boolean isHasKiss() {
-        return hasKiss;
-    }
-
-    public void setHasKiss(boolean hasKiss) {
-        this.hasKiss = hasKiss;
-    }
 }
 

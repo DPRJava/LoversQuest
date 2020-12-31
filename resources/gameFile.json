@@ -1,0 +1,253 @@
+{
+  "I passed PT test ": {
+    "name": "bob",
+    "currentLocation": {
+      "name": "gym",
+      "description": "you watch a soldier conduct the “bend and reach” in the squat rack while grunts and clanking of weights can be heard in the far back corner. you see your battle buddies taking an apft (army physical fitness test) in the basketball courts.",
+      "container": {
+        "contents": [
+          {
+            "name": "pt belt",
+            "useResponse": "you put it on and are now super safe and visible"
+          }
+        ],
+        "location": "gym",
+        "name": "trash can",
+        "useResponse": "just full of your hopes and dreams"
+      },
+      "occupants": [
+        {
+          "name": "Drill SGT Spitting",
+          "description": "is yelling at ",
+          "properties": "DRILL_PT",
+          "location": {
+            "name": "gym",
+            "description": "you watch a soldier conduct the “bend and reach” in the squat rack while grunts and clanking of weights can be heard in the far back corner. you see your battle buddies taking an apft (army physical fitness test) in the basketball courts.",
+            "occupants": [],
+            "directionMap": {
+              "WEST": "barracks",
+              "SOUTH": "chow hall",
+              "EAST": "nothing",
+              "NORTH": "portajohn"
+            }
+          }
+        },
+        {
+          "name": "PFC Studs ",
+          "description": "is doing push up at…",
+          "properties": "BATTLE_PT",
+          "location": {
+            "name": "gym",
+            "description": "you watch a soldier conduct the “bend and reach” in the squat rack while grunts and clanking of weights can be heard in the far back corner. you see your battle buddies taking an apft (army physical fitness test) in the basketball courts.",
+            "occupants": [],
+            "directionMap": {
+              "WEST": "barracks",
+              "SOUTH": "chow hall",
+              "EAST": "nothing",
+              "NORTH": "portajohn"
+            }
+          }
+        }
+      ],
+      "directionMap": {
+        "WEST": "barracks",
+        "SOUTH": "chow hall",
+        "EAST": "nothing",
+        "NORTH": "portajohn"
+      }
+    },
+    "ruckSack": {
+      "items": [
+        {
+          "name": "Physical Training Badge",
+          "useResponse": "You showed up for the pt test"
+        }
+      ]
+    }
+  },
+  "This is A Test": {
+    "name": "bob",
+    "currentLocation": {
+      "name": "barracks",
+      "description": "it smells of gym socks, clp, and peanut butter.",
+      "container": {
+        "contents": [
+          {
+            "name": "m16 assault rifle",
+            "useResponse": "you shoot your rifle in the air in celebration"
+          },
+          {
+            "name": "sick call slip",
+            "useResponse": "you enjoy your soft shoe profile"
+          }
+        ],
+        "location": "barracks",
+        "name": "foot locker",
+        "useResponse": "is your personal safe place. make sure it\u0027s dress right, dress!"
+      },
+      "occupants": [
+        {
+          "name": "Drill SGT Dicks",
+          "description": "is looking into soldiers\u0027 footlockers for contrabands",
+          "properties": "DRILL_DICKS",
+          "location": {
+            "name": "barracks",
+            "description": "it smells of gym socks, clp, and peanut butter.",
+            "occupants": [],
+            "directionMap": {
+              "WEST": "laundry room",
+              "SOUTH": "nothing",
+              "EAST": "gym",
+              "NORTH": "courtyard"
+            }
+          }
+        },
+        {
+          "name": "PVT Carl",
+          "description": "is that guy!",
+          "properties": "BATTLE_BF",
+          "location": {
+            "name": "barracks",
+            "description": "it smells of gym socks, clp, and peanut butter.",
+            "occupants": [],
+            "directionMap": {
+              "WEST": "laundry room",
+              "SOUTH": "nothing",
+              "EAST": "gym",
+              "NORTH": "courtyard"
+            }
+          }
+        }
+      ],
+      "directionMap": {
+        "WEST": "laundry room",
+        "SOUTH": "nothing",
+        "EAST": "gym",
+        "NORTH": "courtyard"
+      }
+    },
+    "ruckSack": {
+      "items": []
+    }
+  },
+  "I am at Range": {
+    "name": "Bob",
+    "currentLocation": {
+      "name": "range",
+      "description": "hear the sounds of rifles and the cries of soldiers as they are getting smoked.",
+      "container": {
+        "contents": [
+          {
+            "name": "natural lime white claw",
+            "useResponse": "you take a refreshing drink of natural lime"
+          },
+          {
+            "name": "black cherry white claw",
+            "useResponse": "you take a refreshing drink of black cherry"
+          },
+          {
+            "name": "ruby grapefruit white claw",
+            "useResponse": "you take a refreshing drink of ruby grapefruit"
+          }
+        ],
+        "location": "range",
+        "name": "ammo box",
+        "useResponse": "container full of brass and whiteclaws"
+      },
+      "occupants": [
+        {
+          "name": "Drill SGT Hawkeyes",
+          "description": "is running a stress shoot.",
+          "properties": "DRILL_RANGE",
+          "location": {
+            "name": "range",
+            "description": "hear the sounds of rifles and the cries of soldiers as they are getting smoked.",
+            "occupants": [],
+            "directionMap": {
+              "WEST": "nothing",
+              "SOUTH": "nothing",
+              "EAST": "courtyard",
+              "NORTH": "nothing"
+            }
+          }
+        },
+        {
+          "name": "SPC Snikers",
+          "description": "is cleaning his weapon.",
+          "properties": "BATTLE_1S1K",
+          "location": {
+            "name": "range",
+            "description": "hear the sounds of rifles and the cries of soldiers as they are getting smoked.",
+            "occupants": [],
+            "directionMap": {
+              "WEST": "nothing",
+              "SOUTH": "nothing",
+              "EAST": "courtyard",
+              "NORTH": "nothing"
+            }
+          }
+        }
+      ],
+      "directionMap": {
+        "WEST": "nothing",
+        "SOUTH": "nothing",
+        "EAST": "courtyard",
+        "NORTH": "nothing"
+      }
+    },
+    "ruckSack": {
+      "items": []
+    }
+  },
+  "I want to talk CLS test": {
+    "name": "Bob",
+    "currentLocation": {
+      "name": "courtyard",
+      "description": "a vast field littered with cigarettes butts, empty monster cans, and fellow soldiers. your unit is conducting some sort of exam. upon closer look, there’s a combat life saver warrior skill level 1 exam taking place.",
+      "occupants": [
+        {
+          "name": "Drill SGT Tourniquette",
+          "description": "is the CLS instructor and is schooling new guys on combat lifesaver stuff.",
+          "properties": "DRILL_CLS",
+          "location": {
+            "name": "courtyard",
+            "description": "a vast field littered with cigarettes butts, empty monster cans, and fellow soldiers. your unit is conducting some sort of exam. upon closer look, there’s a combat life saver warrior skill level 1 exam taking place.",
+            "occupants": [],
+            "directionMap": {
+              "SOUTH": "barracks",
+              "WEST": "range",
+              "EAST": "nothing",
+              "NORTH": "nothing"
+            }
+          }
+        }
+      ],
+      "directionMap": {
+        "SOUTH": "barracks",
+        "WEST": "range",
+        "EAST": "nothing",
+        "NORTH": "nothing"
+      }
+    },
+    "ruckSack": {
+      "items": [
+        {
+          "name": "ruby grapefruit white claw",
+          "useResponse": "you take a refreshing drink of ruby grapefruit"
+        },
+        {
+          "name": "black cherry white claw",
+          "useResponse": "you take a refreshing drink of black cherry"
+        },
+        {
+          "name": "mango white claw",
+          "useResponse": "you take a refreshing drink of watermelon"
+        },
+        {
+          "name": "Physical Training Badge",
+          "useResponse": "You showed up for the pt test"
+        }
+      ]
+    }
+  }
+}

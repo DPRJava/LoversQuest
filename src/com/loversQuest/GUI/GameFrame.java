@@ -1,33 +1,27 @@
 package com.loversQuest.GUI;
 
-import com.loversQuest.IO.GraphicClass;
+import com.loversQuest.miniGame.clsMinigame.CLSGame;
+import com.loversQuest.fileHandler.JsonGetter;
 import com.loversQuest.gameWorldPieces.Player;
+import com.loversQuest.gameWorldPieces.models_NPC.NPC_Properties;
+import com.loversQuest.miniGame.gymGame.PtGame;
+import com.loversQuest.miniGame.shootingGame.RangeGame;
+import com.loversQuest.miniGame.soldierOfTheMonthGame.SOMClient;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.io.IOException;
 import java.awt.event.ActionEvent;
 import java.awt.event.*;
-import java.util.Arrays;
 
 public class GameFrame extends JFrame{
-//    Action upAction = new UpAction();
 
     JFrame mainFrame;
-    //////////////////////////////////////////////DANNY HERE IS YOUR PANEL //////////////////////////////////////////
     JPanel mainPanel;
-    //////////////////////////////////////////////DANNY HERE IS YOUR PANEL //////////////////////////////////////////
     JFrameInput input;
     Player player;
-
     String command;
-
     Border blackBorder = BorderFactory.createLineBorder(Color.BLACK);
-
-    //not in use at the moment
-    JTextArea locationArt = new JTextArea();
-    GraphicClass asciiPrinter;
 
     //this thing makes panels
     JPanelFactory panelFactory;
@@ -35,44 +29,30 @@ public class GameFrame extends JFrame{
     InventoryPanel inventoryPanel;
     //top left panel
     GameResponsePanel gameResponsePanel;
-    //bottom left panel
     InputPanel inputPanel;
-    //bottom right panel
     MapPanel mapPanel;
-
-    //scrolli boi
-    ScrollPane scrollPane = new ScrollPane();
-
-    // creating action instance variables for arrow input
-    Action upAction;
-    Action downAction;
-    Action leftAction;
-    Action rightAction;
     Action inputEnterAction;
+    private SafetyBriefPanel safetyBriefPanel;
 
-    public GameFrame(String gameResponse, JFrameInput input, Player player, GraphicClass asciiPrinter) throws IOException {
-        //TODO: Text input area at bottom has event listener for enter key and button press.
-        // When event is triggered the panes are re-rendered with the following
-        // Game response text, Inventory, Map(if location is included), Ascii art..
+
+    //ctor for GameFrame
+
+    public GameFrame(String gameResponse, JFrameInput input, Player player) {
+
         this.input = input;
         this.player = player;
-
-        //not in use at the moment
-        this.asciiPrinter = asciiPrinter;
 
         //make some panels
         this.panelFactory = new JPanelFactory(this);
         this.gameResponsePanel = panelFactory.getGameResponsePanel();
         this.inventoryPanel = panelFactory.getInventoryPanel();
         this.inputPanel = panelFactory.getInputPanel();
-        this.mapPanel = panelFactory.getMapPanel();
-
-
+        this.mapPanel = new MapPanel(this.player.getCurrentLocation().getName());
 
         //main panel
         this.mainPanel = new JPanel();
 
-        //set intro dialogue
+        //set intro dialogue TODO: refactor if have time
         this.gameResponsePanel.setResponseText(gameResponse);
 
         //create main frame with title
@@ -80,86 +60,20 @@ public class GameFrame extends JFrame{
         //stop function on exit of main frame
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //set layout
-
         GridLayout mainGridLayout = new GridLayout(1, 1, 3, 3);
-
-
-        //comment out for main panel to have main layout
-//        ///apply layout to content of frame
-//        mainFrame.getContentPane().setLayout(mainGridLayout);
-
-
-
-        // what does this label do? interfering with current layout
-//        JLabel testingArrowsKeys = new JLabel();
-//        inputPanel.add(testingArrowsKeys);
-
-        //set event listeners for input panel (bottom left)
-//        inputPanel.getInputText().addKeyListener(new KeyListener() {
-//
-//            @Override
-//            public void keyTyped(KeyEvent e) {
-//            }
-//
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//                if(e.getKeyCode()==KeyEvent.VK_ENTER){
-//                    try {
-//                        GameFrame.this.runCommand(inputPanel.getInputText().getText());
-//                    } catch (IOException ioException) {
-//                        ioException.printStackTrace();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void keyReleased(KeyEvent e) {}
-//
-//        });
 
         inputEnterAction = new GameFrame.inputEnterKeyAction();
         inputPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ENTER"), "inputEnterSubmit");
         inputPanel.getActionMap().put("inputEnterSubmit", inputEnterAction);
-
-
-        inputPanel.getSubmitButton().addMouseListener(new MouseListener() {
-
+        inputPanel.getSubmitButton().addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 String gameCommand = inputPanel.getInputText().getText();
                 //calls relay command function of GameFrame class instance
-                try {
-                    GameFrame.this.runCommand(gameCommand);
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
+                GameFrame.this.runCommand(gameCommand);
             }
         });
-
-
         mainFrame.setFocusable(true);
-
-
         //set border
         mainFrame.getRootPane().setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         gameResponsePanel.setBorder(blackBorder);
@@ -168,47 +82,25 @@ public class GameFrame extends JFrame{
         mapPanel.setBorder(blackBorder);
 
         //add main panel to frame, then add other panels to main panel.
-        mainPanel.setPreferredSize(new Dimension(500, 500));
-//        scrollPane.add(mainPanel);
         mainFrame.getContentPane().add(mainPanel);
-        FlowLayout flowFromInsurance = new FlowLayout(2);
-
-//        mainPanel.setLayout(mainGridLayout);
         mainPanel.add(gameResponsePanel);
         mainPanel.add(inventoryPanel);
         mainPanel.add(inputPanel);
         mainPanel.add(mapPanel);
 
-
-//        // add all panels to main pane to the main game frame
-//        mainFrame.getContentPane().add(gameResponsePanel);
-//        mainFrame.getContentPane().add(inventoryPanel);
-//        mainFrame.getContentPane().add(inputPanel);
-//        mainFrame.getContentPane().add(mapPanel);
-
-
         //idk what this does
         mainFrame.pack();
-        //make frame visible
+        mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        mainFrame.setResizable(false);
+        mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
-
-        upAction = new GameFrame.UpAction();
-        downAction = new GameFrame.DownAction();
-        leftAction  = new GameFrame.LeftAction();
-        rightAction = new GameFrame.RightAction();
-
-        mainFrame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("UP"), "upAction");
-        System.out.println(Arrays.toString(mainFrame.getRootPane().getInputMap().allKeys()));
-        mainFrame.getRootPane().getActionMap().put("upAction", upAction);
-
-        mainFrame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("DOWN"), "downAction");
-        mainFrame.getRootPane().getActionMap().put("downAction", downAction);
-
-        mainFrame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("RIGHT"), "rightAction");
-        mainFrame.getRootPane().getActionMap().put("rightAction", rightAction);
-
-        mainFrame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("LEFT"), "leftAction");
-        mainFrame.getRootPane().getActionMap().put("leftAction", leftAction);
+        mainFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                exitGame();
+            }
+        });
+        this.gameResponsePanel.addPainter();
     }
 
     public void changeTopLeftText (String newText){
@@ -216,9 +108,8 @@ public class GameFrame extends JFrame{
     }
 
     public void changeTopRightText(String inventory){
-
         inventoryPanel.setInventoryText(inventory);
-
+        inputPanel.getInputText().requestFocus();
     }
 
     public String getCommand(){
@@ -226,83 +117,214 @@ public class GameFrame extends JFrame{
     }
 
 
-    //runs all internal in this method. need to uncouple
-    public void runCommand(String command) throws IOException {
-
+    //runs all internal and get back response at top left area
+    public void runCommand(String command) {
         String response = input.getUserAction(this.player, command);
-        this.gameResponsePanel.setResponseText(response);
-        this.inputPanel.getInputText().setText(null);
+        if (response.equals("miniGameInit")){
+            openMiniGame(); // open game Frame
+        } else if(response.equals("happyEnding")){
+            openHappyEnding();
+        } else {
+            this.gameResponsePanel.setResponseText(response);
+            this.refreshPanel();
+        }
+        this.gameResponsePanel.addPainter();
+    }
+
+    //handle leave game function
+    public void exitGame() {
+        String[] options = {"yes", "no"};
+        int flag = JOptionPane.showOptionDialog(null, "Do you want to save the game before leave?",
+                "LOVE QUEST", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1] + options[0]
+        );
+        if (flag == 0) {
+            String gameFile = JOptionPane.showInputDialog("please enter a name for your game file");
+            if (gameFile == null){
+                System.exit(0);
+            }
+            JsonGetter.saveGame(gameFile, this.getPlayer());
+        }
+        if (flag == 1){
+            System.exit(0);
+        }
+    }
+
+    // handle mini game
+    public void openMiniGame(){
+        if(this.getPlayer().getCurrentLocation().hasNPC_Property(NPC_Properties.DRILL_RANGE)) {
+            this.gameResponsePanel.setResponseText("you better show me that your can shoot better than my grandma. \nstay tight for the SAFETY BRIEF");
+            showSafetyBrief("range");
+            RangeGame miniGame = new RangeGame(this);
+            miniGame.init();
+        } else if (this.getPlayer().getCurrentLocation().hasNPC_Property(NPC_Properties.DRILL_CLS)){
+            //NPC tell back miniGameInit
+            this.gameResponsePanel.setResponseText("Private! Time to check your CLS knowledge! Don't tell me that you still use duct tape for everything!" +
+                    "\nsit down and wait for the Combat Life saver qualification exam SAFETY BRIEF");
+            showSafetyBrief("cls");
+            CLSGame miniGame = new CLSGame(this);
+            miniGame.init(1);
+        } else if (this.getPlayer().getCurrentLocation().hasNPC_Property(NPC_Properties.DRILL_PT)){
+            this.gameResponsePanel.setResponseText("It's about time you showed up! change to your PT uniform and we're about to start this PT test");
+            showSafetyBrief("pt");
+            PtGame miniGame = new PtGame(GameFrame.this);
+            Thread newTH = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    GameFrame.this.inputPanel.getInputText().setEditable(false);
+                    miniGame.init();
+                    if (!miniGame.isGameRun()){
+                        GameFrame.this.inputPanel.getInputText().setEditable(true);
+                    }
+                }
+            });
+            newTH.start();
+        } else if(this.getPlayer().getCurrentLocation().hasNPC_Property(NPC_Properties.DRILL_DICKS)){
+            SOMClient miniGame = new SOMClient(this);
+            Thread gameTh = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    GameFrame.this.inputPanel.getInputText().setEditable(false);
+                    miniGame.init();
+                    if(miniGame.isGameOver()){
+                        GameFrame.this.inputPanel.getInputText().setEditable(true);
+                    }
+                }
+            });
+            gameTh.start();
+        } else {
+            this.gameResponsePanel.setResponseText("You need report to the Drill SGT first");
+        }
+    }
+
+    // to refresh game screen
+    public void refreshPanel(){
         this.inventoryPanel.setInventoryText(this.player.getAllItems().toString());
-
-        if(this.player.isHasKiss()){
-            this.gameResponsePanel.setResponseText(
-                    "Your sweetheart says: OMG five WhiteClaws for me? I love you\n" +
-                    "\nCongrats soldier you've just graduated AIT. Now go buy a Camaro."+
-                    "\nYour quest for Love has ended.");
-            this.inputPanel.setVisible(false);
-            this.mapPanel.setVisible(false);
-            this.inventoryPanel.setVisible(false);
-        }
-
+        this.mapPanel.updateImageLabel(this.player.getCurrentLocation().getName());
+        this.inputPanel.getInputText().setText("");
     }
 
-    // need for key binding
-    public class UpAction extends AbstractAction {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                GameFrame.this.runCommand("go north");
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
+    // show mini game instruction
+    public void showSafetyBrief(String game){
+        String[] options = {"Start Qualification Test"};
+        safetyBriefPanel = new SafetyBriefPanel(game);
+        JOptionPane.showOptionDialog(null, safetyBriefPanel, "Safety Brief", JOptionPane.NO_OPTION,JOptionPane.PLAIN_MESSAGE,null,options,options[0]);
+    }
+    // the ending handler
+    public void openHappyEnding(){
+        String endScene =
+                "     8                            8\n" +
+                        "     8      /```|     .@@@@@,     8\n" +
+                        "     8     |  66|_    @@@@@@@@,   8 (\\/)\n" +
+                        "     8     C     _)   aa`@@@@@@   8  \\/\n" +
+                        "     8(\\/)  \\ ._|    (_   ?@@@@   8\n" +
+                        "    |8:\\/:~:~) /:~:~: =' @@@@~:~:~8\n" +
+                        "    |8::::::/\\\\/`\\;_:::\\ (__::::::8\n" +
+                        "    |8:::::| \\ '|___/` \\\\// `\\):::8\n" +
+                        "    |8::::|| | '|::/ /  ^^  \\ \\:::8\n" +
+                        "    |8::::|| | ' \\:| \\__/\\__/ |:::8\n" +
+                        "    |8o:::|\\ \\  ' |:\\_\\    /_/::::8o\n" +
+                        "    |\"8o:::=\\ \\===::/`\\`%%`/'\\::::\"8o\n" +
+                        "    |\\\"8o~|  \\_\\  \\|   `\"\"`   |:~:~\\8o\n" +
+                        "    \\ \\\"8o\\   )))  \\           \\::::\"8o\n" +
+                        "     \\ \\\"8o\\`.  \\   \\           \\::::\"8o\n" +
+                        "      \\|~~~~~| -|| -|mmmmmmmmmmmm~~~~~|\n" +
+                        "       `~~~~~|  ||  |~~|  |~|  |~~~~~~\n" +
+                        "             |  ||  |  |__| |__|\n" +
+                        "             |  ||  |  \\  | \\  |\n" +
+                        "             |__||__|  (~~^\\(~~^\\\n" +
+                        "             (   \\   \\  `-._)`-._)\n" +
+                        "              `-._)-._)\n" +
+                        "\n" +
+                        "... and they lived happily ever after!";
+
+
+
+        this.gameResponsePanel.setResponseText("OMG!!! You Did get that Ring for me! I love you!");
+        this.gameResponsePanel.setResponseText(this.getPlayer().displayItems());
+        this.inputPanel.getInputText().setBackground(Color.pink);
+        this.inputPanel.getInputText().setForeground(Color.MAGENTA);
+        this.inputPanel.getInputText().setEditable(false);
+        this.gameResponsePanel.getResponseText().setBackground(Color.pink);
+        this.inventoryPanel.getInventoryText().setBackground(Color.pink);
+        Font font = new Font("arial", Font.PLAIN, 10);
+        this.inventoryPanel.getInventoryText().setFont(font);
+        this.inventoryPanel.getInventoryText().setForeground(Color.MAGENTA);
+        this.inventoryPanel.getInventoryText().setText(endScene);
+        this.mapPanel.updateImageLabel("ending");
+        Thread endTh = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Font font = new Font("Apple Casual", Font.PLAIN,20);
+                    GameFrame.this.gameResponsePanel.getResponseText().setFont(font);
+                    GameFrame.this.inputPanel.getInputText().setText("you are surround by happiness right now (*^︹^*) ❤❤");
+                    GameFrame.this.gameResponsePanel.setResponseText("you are surround by happiness right now (*^︹^*) ❤❤");
+                    Thread.sleep(3000);
+                    useWhiteClaw();
+                    Thread.sleep(3000);
+                    GameFrame.this.gameResponsePanel.setResponseText("Congrats soldier! you've just graduate AIT. Now go buy a Camaro with 24% APR");
+                    Thread.sleep(3000);
+                    GameFrame.this.gameResponsePanel.setResponseText("Your quest for Love has ended");
+                    Thread.sleep(3000);
+                    String[] options = {"OK"};
+                    int response = JOptionPane.showOptionDialog(null, "Thanks for playing the game!", "THE END",
+                            JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                    if (response == 0) {
+                        System.exit(0);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }
+        });
+        endTh.start();
     }
 
-    public class DownAction extends AbstractAction {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                GameFrame.this.runCommand("go south");
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-            System.out.println("working down");
-        }
+    //use all whiteClaws at ending scene
+    public void useWhiteClaw(){
+       String itemList = this.getPlayer().displayItems();
+       itemList.replace("[", "");
+       itemList.replace("]","");
+       if (itemList.contains("claw")){
+           String[] allwhiteClaws= input.parser.findMatchObj("claw", "use");
+           StringBuilder boardResponse = new StringBuilder();
+
+           for (int i = 0; i< allwhiteClaws.length; i++){
+               if(this.getPlayer().isHasCertainItem(allwhiteClaws[i])){
+               String whiteClaw = "use " + allwhiteClaws[i];
+               String response = "\n" + input.getUserAction(this.player, whiteClaw) + " with your sweet heart";
+               boardResponse.append(response);}
+           }
+           this.gameResponsePanel.setResponseText(boardResponse.toString());
+       } else{
+           this.gameResponsePanel.setResponseText("you wish you could have some white claws to celebrate with your sweetheart at this moment..");
+       }
+
+
     }
 
-    public class RightAction extends AbstractAction {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                GameFrame.this.runCommand("go east");
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-            System.out.println("working right");
-        }
+    public Player getPlayer() {
+        return player;
     }
 
-    public class LeftAction extends AbstractAction {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                GameFrame.this.runCommand("go west");
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-            System.out.println("working left");
-        }
+    public void setPlayer(Player player) {
+        this.player = player;
     }
+
+    public MapPanel getMapPanel() {
+        return mapPanel;
+    }
+
+    public void setMapPanel(MapPanel mapPanel) {
+        this.mapPanel = mapPanel;
+    }
+
 
     public class inputEnterKeyAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
-            try {
-                GameFrame.this.runCommand(inputPanel.getInputText().getText());
-                mainFrame.getRootPane().requestFocusInWindow();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
+            GameFrame.this.runCommand(inputPanel.getInputText().getText());
+            inputPanel.cursorFocus();
         }
     }
 

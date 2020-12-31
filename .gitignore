@@ -1,0 +1,6 @@
+/shelf/
+/workspace.xml
+out/
+.idea/
+*.iml
+gameFile.json
