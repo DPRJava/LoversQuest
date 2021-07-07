@@ -1,26 +1,22 @@
 package com.loversQuest.gameWorldPieces;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.loversQuest.IO.GraphicClass;
-
-import java.io.IOException;
+import java.util.Map;
 
 public class Player {
 
     private String name;
     private Location currentLocation;
+    private double money;
 
     private boolean hasChallengeCoin = false;
     private boolean hasKiss = false;
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String BLUE = "\u001B[34m";
+//    public static final String ANSI_RESET = "\u001B[0m";
+//    public static final String BLUE = "\u001B[34m";
 
-
-    public RuckSack ruckSack = new RuckSack();
-
+    public PlayerContainer ruckSack = new PlayerContainer();
+    public PlayerContainer footlocker = new PlayerContainer();
 
     // CTOR
     public Player(String name, Location currentLocation) {
@@ -30,40 +26,23 @@ public class Player {
 
     // BUSINESS METHODS
 
-    //go function can result in navigating to "NOTHING" area. need to error check if
-    // indicated direction is not a room and prevent movement.
     public boolean go(String directionInput) {
-
-        String direction = directionInput.toLowerCase();
+        String direction = directionInput.toUpperCase();
         String response = null;
-
         boolean result = false;
-
-        // conditions for officer functionality. (Preventing us from going to the west)
-        if (getCurrentLocation().getOccupant() instanceof Officer) {
-            if (direction.equals("west")) {
-                if (getItem(getCurrentLocation().getOccupant().getPrize().getName()) == null) {
-                    ((Officer) getCurrentLocation().getOccupant()).reRoute(this);
-                    return false;
-                }
-            }
-        }
-
         //get indicated destination from direction string
-        Location destination = this.currentLocation.getDirectionFromString(directionInput);
-        // if it is a valid direction to go, update current position
-
+        Location destination = this.currentLocation.getDirectionFromString(direction);
         if (destination != null && validateLocation(destination)) {
             this.setCurrentLocation(destination);
+            System.out.println(destination.getName());
             result = true;
         }
         return result;
-
     }
 
     // checks if a given location is a place a player can move
     public boolean validateLocation(Location destination) {
-        return !destination.getName().equals("NOTHING");
+        return !destination.getName().toUpperCase().equals("NOTHING");
     }
 
     public String look() {
@@ -90,20 +69,24 @@ public class Player {
     public boolean pickUpItem(String itemName) {
         //loop through items in current location
         boolean gotItem = false;
-        for (int i = 0; i < currentLocation.getItemsList().size(); i++) {
-            Item locationItem = currentLocation.getItemsList().get(i);
-            // first portion originally: itemName.toLowerCase().equals(locationItem.getName().toLowerCase()
-            if (locationItem.getName().toLowerCase().contains(itemName.toLowerCase()) && !(locationItem instanceof Container)) {
-                this.addItem(locationItem);
-                currentLocation.removeItem(locationItem);
-                gotItem = true;
-            }
-        }
+//        for (int i = 0; i < currentLocation.getItemsList().size(); i++) {
+//            Item locationItem = currentLocation.getItemsList().get(i);
+//            // first portion originally: itemName.toLowerCase().equals(locationItem.getName().toLowerCase()
+//            if (locationItem.getName().toLowerCase().contains(itemName.toLowerCase()) && !(locationItem instanceof Container)) {
+//                this.addItem(locationItem);
+//                currentLocation.removeItem(locationItem);
+//                gotItem = true;
+//            }
+//        }
         return gotItem;
         // if string itemName matches an item in current location
         // add item to inventory and remove item from location
     }
 
+    /**
+     * may return Null??
+     * @return
+     */
     public ArrayList<Item> inspect() {
         ArrayList<Item> result = null;
         if(currentLocation.getContainer() != null){
@@ -115,27 +98,19 @@ public class Player {
     public String displayItems() {
         return ruckSack.displayRuckSackContents();
     }
-
     public List<Item> getAllItems() {
         return ruckSack.items;
     }
 
     // SETTERS/GETTERS
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Location getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public void setCurrentLocation(Location currentLocation) {
-        this.currentLocation = currentLocation;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public Location getCurrentLocation() { return currentLocation; }
+    public void setCurrentLocation(Location currentLocation) { this.currentLocation = currentLocation; }
+    public boolean isHasChallengeCoin() { return hasChallengeCoin; }
+    public void setHasChallengeCoin(boolean hasChallengeCoin) { this.hasChallengeCoin = hasChallengeCoin; }
+    public boolean isHasKiss() { return hasKiss; }
+    public void setHasKiss(boolean hasKiss) { this.hasKiss = hasKiss; }
 
 //    public void printCurrentAscii() throws IOException {
 //        //            this.currentLocation.getName().toLowerCase().equals("gazebo");
@@ -153,21 +128,5 @@ public class Player {
 //            case BLUE + "px" + ANSI_RESET -> graphicImage.printLocation("px.txt");
 //            default -> graphicImage.printLocation("gazebo.txt");
 //        }
-
-    public boolean isHasChallengeCoin() {
-        return hasChallengeCoin;
-    }
-
-    public void setHasChallengeCoin(boolean hasChallengeCoin) {
-        this.hasChallengeCoin = hasChallengeCoin;
-    }
-
-    public boolean isHasKiss() {
-        return hasKiss;
-    }
-
-    public void setHasKiss(boolean hasKiss) {
-        this.hasKiss = hasKiss;
-    }
 }
 

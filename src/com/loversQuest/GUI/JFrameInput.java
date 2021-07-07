@@ -8,6 +8,8 @@ import com.loversQuest.gameWorldPieces.Player;
 
 
 import java.awt.*;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.io.IOException;
 
@@ -22,28 +24,33 @@ public class JFrameInput {
 
 
 
-    public String displayGoResponse(String direction, Player player) throws IOException{
+    public String displayGoResponse(String direction, Player player) {
 
         String status = "You head to the " +direction+ " and find yourself in the " + player.getCurrentLocation().getName();
-
         return status;
-//                  + graphicImage.printLocation("home.txt");
     }
 
     //TODO: better error / input checking on responseInput and all methods that use util.Scanner
 
     //takes a command to be taken in by jframe input text section
-    public String getUserAction(Player player, String command) throws IOException{
+    public String getUserAction(Player player, String command) {
 
         String finalResponse = null;
-
-
         String[] response = command.trim().toLowerCase().split("\\s+");
+
 
         // parses user response further, into second array
         String stringifiedResponse = String.join(" ", Arrays.copyOfRange(response, 1, response.length));
 
-        String actionVerb = parser.parseCommand(response[0]);
+//        System.out.println("Command is " + command);
+//        ArrayList responseList = new ArrayList(Arrays.asList(response));
+//        System.out.println("Response is " + responseList);
+
+        String actionVerb = parser.parseCommand2(response[0]);
+
+
+//        parser.findSynonyms(response[0]);
+
 
         // handles first word of response
 
@@ -55,14 +62,9 @@ public class JFrameInput {
                     return "Cannot go nowhere";
                 } else {
                     direction = response[1];
-                    // player.go returns false if bad input, return statement prevents displayGoResponse() from running
-                    if (player.getCurrentLocation().getName().equalsIgnoreCase("px") &&
-                            direction.equalsIgnoreCase("west") &&
-                            !player.isHasChallengeCoin() &&
-                            !player.go(direction)) return "Captain Charlie sends you back to complete your WARRIOR SKILL LEVEL 1 tasks.";
-                    else if(!player.go(direction)){
-                        return "You can't go that way";
-                    }
+                    Boolean isGo = player.go(direction);
+                    System.out.println(isGo);
+                    System.out.println(player.getCurrentLocation().getName());
                 }
                 finalResponse = (displayGoResponse(direction, player));
             }
@@ -129,12 +131,13 @@ public class JFrameInput {
             // input action verb does not match
             default -> finalResponse = ("Unreadable input. Please try again.");
         }
+
         return finalResponse;
     }
 
     //TODO: error checking on user input response
 
-    public String goActionPrompt(Player player, String direction) throws IOException{
+    public String goActionPrompt(Player player, String direction) {
         System.out.println("Where would you like to go? [ North, South, East, West ]");
         String response = direction;
         player.go(response);

@@ -1,31 +1,20 @@
 package com.loversQuest.gameWorldPieces;
 
-public class Lover extends NonPlayerCharacters{
+public class Lover_Old extends NonPlayerCharacters{
     private int numOfItemsNeeded;
     private String keyItemName;
 
-    public Lover(String name, Location location) {
+    public Lover_Old(String name, Location location) {
         super(name, location);
     }
-
-    public Lover(String name, String description, Location location) {
+    public Lover_Old(String name, String description, Location location) {
         super(name, description, location);
     }
 
-    @Override
-    public void setPrize(Item item) {
-        super.setPrize(item);
-    }
-
-    @Override
-    public Item getPrize() {
-        return super.getPrize();
-    }
 
     public void setKeyItemName (String keyItemName){
         this.keyItemName = keyItemName;
     }
-
     public void setNumOfItemsNeeded(int numOfItemsNeeded){
         this.numOfItemsNeeded = numOfItemsNeeded;
     }

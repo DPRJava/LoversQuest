@@ -3,10 +3,7 @@ package com.loversQuest.IO;
 import com.loversQuest.GUI.MapFactory;
 import com.loversQuest.GUI.MapFrame;
 import com.loversQuest.GameWorld;
-import com.loversQuest.gameWorldPieces.CardinalDirection;
-import com.loversQuest.gameWorldPieces.Item;
-import com.loversQuest.gameWorldPieces.Officer;
-import com.loversQuest.gameWorldPieces.Player;
+import com.loversQuest.gameWorldPieces.*;
 import com.loversQuest.gameWorldPieces.Container;
 
 
@@ -17,6 +14,7 @@ import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.io.IOException;
 
+import java.util.Map;
 import java.util.Scanner;
 
 import static com.loversQuest.IO.Output.BLUE;
@@ -34,7 +32,7 @@ public class Input {
 
     Scanner userInput = new Scanner(System.in);
 
-    public String displayGoResponse(String direction, Player player) throws IOException {
+    public String displayGoResponse(String direction, Player player) {
 
 //        String status = "You head to the " + direction + " and find yourself in the " + player.getCurrentLocation().getColoredName();
 //        return status;
@@ -44,7 +42,7 @@ public class Input {
         for (CardinalDirection realDirections : CardinalDirection.values()) {
 
             if (realDirections.toString().equalsIgnoreCase(direction)) {
-                String status = "You head to the " + direction + " and find yourself in the " + player.getCurrentLocation().getColoredName();
+                String status = "You head to the " + direction + " and find yourself in the " + player.getCurrentLocation().getName();
                 return status;
             } else {
                 return "Bad Directional Input Private!";
@@ -56,7 +54,7 @@ public class Input {
 
     //TODO: better error / input checking on responseInput and all methods that use util.Scanner
 
-    public String getUserAction(Player player) throws IOException {
+    public String getUserAction(Player player) {
 
         String finalResponse = null;
 
@@ -164,7 +162,7 @@ public class Input {
 
     //TODO: error checking on user input response
 
-    public String goActionPrompt(Player player) throws IOException {
+    public String goActionPrompt(Player player) {
         System.out.println("Where would you like to go? " + ANSI_PURPLE + "[ North, South, East, West ]: " + ANSI_RESET);
         String response = userInput.nextLine().toLowerCase();
         player.go(response);
@@ -173,31 +171,21 @@ public class Input {
 
     // TODO: IMPLEMENT ARROW KEY INPUT -> call appropriate go method
     // if user presses up arrow, call go north on player
-    public void moveWhenKeyPressed(KeyEvent event) {
+    public String moveWhenKeyPressed(KeyEvent event, Player player) throws IOException {
+
         if (event.getKeyCode() == KeyEvent.VK_UP) {
             System.out.println("up arrow was pressed ninja");
+            goActionPrompt(player);
         } else if (event.getKeyCode() == KeyEvent.VK_DOWN) {
             System.out.println("down arrow pressed");
+            goActionPrompt(player);
         } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
             System.out.println("left   arrow   was   pressed");
+            goActionPrompt(player);
         } else if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
             System.out.println(" right arrow right arrow ");
+            goActionPrompt(player);
         }
+        return moveWhenKeyPressed(event, player);
     }
-
-//    // need to implement these abstract methods to "implement" keyListener class
-//    @Override
-//    public void keyTyped(KeyEvent e) {
-//
-//    }
-//    @Override
-//    public void keyPressed(KeyEvent e) {
-//
-//    }
-//    @Override
-//    public void keyReleased(KeyEvent e) {
-//
-//    }
-
-
 }
